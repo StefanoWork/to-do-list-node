@@ -13,10 +13,9 @@ Questa è una semplice applicazione To-Do List che permette agli utenti di regis
 
 ## Tecnologie Utilizzate
 
-- **Node.js**: Ambiente di runtime per eseguire JavaScript sul server.
-- **Express**: Framework web per Node.js.
+- **Node.js**
+- **Express**
 - **MongoDB**: Database NoSQL per memorizzare i dati degli utenti e delle attività.
-- **Mongoose**: Libreria ODM (Object Data Modeling) per MongoDB e Node.js.
 - **Passport.js**: Middleware per l'autenticazione.
 - **Joi**: Libreria per la validazione dei dati.
 - **Swagger**: Strumento per la documentazione delle API.
