@@ -3,10 +3,25 @@ import passport from 'passport';
 import { hashPassword } from '../utils.js';
 import User from '../models/User.js';
 import { authenticated } from '../middleware/Auth.js';
+import Joi from 'joi';
 
 const router = express.Router();
 
 
+//Validazione dati
+const userSchema = Joi.object({
+  username: Joi.string().required(),
+  password: Joi.string().required()
+});
+
+const addActivitySchema = Joi.object({
+  name: Joi.string().required(),
+  date: Joi.date().required()
+});
+
+const nameEditSchema = Joi.object({
+    name: Joi.string().required(),
+})
 
 router.get("/", (req, res) => {
     res.send("Hello World");
@@ -31,11 +46,18 @@ router.get("/signup", (req, res) => {
  *     responses:
  *       200:
  *         description: User registered
+ *      400:
+ *         description: Invalid data
  *       500:
  *         description: Error registering user
  */
 router.post('/signup', async (req, res) => {
   const { username, password } = req.body;
+
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
   try {
     const hashedPassword = await hashPassword(password);
     const newUser = new User({ username, password: hashedPassword });
@@ -58,6 +80,14 @@ router.get("/login", (req, res) => {
 });
 
 
+const validateLogin = (req, res, next) => {
+  const { error } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+  next();
+};
+
 /**
  * @swagger
  * /login:
@@ -67,7 +97,7 @@ router.get("/login", (req, res) => {
  *       200:
  *         description: Redirect profile page
  */
-router.post('/login', passport.authenticate('local', {
+router.post('/login', validateLogin, passport.authenticate('local', {
   successRedirect: '/profile',
   failureRedirect: '/login',
   failureFlash: true
@@ -119,15 +149,22 @@ router.get("/profile", authenticated, async (req, res, next) => {
  *     responses:
  *       200:
  *         description: Added activity
+ *       400:
+ *         description: Invalid data
  *       404:
- *        description: User not found
+ *         description: User not found
  *      500:
- *        description: Error adding activity
+ *         description: Error adding activity
  */
 router.post("/profile", async (req, res) => {
   console.log(req.body);
   const { name, date} = req.body;
   const userId = req.user._id;
+
+  const { error } = addActivitySchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
 
   try {
     const user = await User.findById(userId);
@@ -228,11 +265,21 @@ router.put("/profile/:id", async (req, res) => {
   const activityId = req.params.id;
   const { name } = req.body;
 
+  const { error } = nameEditSchema.validate(req.body);
+  if (error) {
+    return res.status(400).send(error.details[0].message);
+  }
+
   const user = await User.findOne({ "activities._id": activityId });
   const activity = user.activities.id(activityId);
   activity.name = name;
   await user.save();
   res.status(200).send("Activity updated");
 });
+
+router.use((req, res) => {
+  res.status(404).send("404 Page not found").send("404 Page not found");
+});
+
 
 export default router;
