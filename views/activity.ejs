@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Details activity</h1>
+    
+    <p id="pName"><%= activity.name %></p>
+    <input type="text" id="Inputname" name="name" style="visibility: hidden;" placeholder="<%= activity.name %>" required>
+    <div>
+        <button id="edit">Edit</button>
+        <button id="save" style="visibility: hidden;">Save</button>
+        <button id="delete">Delete</button>
+    </div>
+    
+    
+   
+</body>
+</html>
+
+<script>
+    document.getElementById('delete').addEventListener('click', async (e) => 
+    {
+        const activityId = '<%= activity._id %>';
+        const response = await fetch(`/profile/${activityId}`, {
+            method: 'DELETE'
+        });
+        window.location.href = '/profile';
+    });
+
+    document.getElementById('edit').addEventListener('click', async (e) => 
+    {
+        document.getElementById('pName').style.visibility = 'hidden';
+        document.getElementById('Inputname').style.visibility = 'visible';
+        document.getElementById('delete').style.visibility = 'hidden';
+        document.getElementById('save').style.visibility = 'visible';
+        document.getElementById('edit').style.visibility = 'hidden';
+    });
+
+    document.getElementById('save').addEventListener('click', async (e) => 
+    {
+        const name = document.getElementById('Inputname').value;
+        const activityId = '<%= activity._id %>';
+        const response = await fetch(`/profile/${activityId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name })
+        });
+
+        if(response.ok) {
+            document.getElementById('pName').textContent = name;
+            document.getElementById('pName').style.visibility = 'visible';
+            document.getElementById('Inputname').style.visibility = 'hidden';
+            document.getElementById('delete').style.visibility = 'visible';
+            document.getElementById('save').style.visibility = 'hidden';
+            document.getElementById('edit').style.visibility = 'visible';
+        } else {
+            alert('Faile to update');
+        }
+        
+
+
+    });
+</script>

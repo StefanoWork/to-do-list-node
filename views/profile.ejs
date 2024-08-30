@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity</title>
+</head>
+<body>
+    <h1>Welcome to the activity page!</h1>
+    <button id="addButton">Add activity</button>
+    <form id="addActivity" style="visibility: hidden;">
+        <label for="name">Activity:</label>
+        <input type="text" id="name" name="name" required>
+        <br>
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+        <br>
+        <button type="submit">Add</button>
+    </form>
+
+    <% if(activities.length === 0) { %>
+                <p>No activities</p>
+        <% } else { %>
+    <ul>
+        <% activities.forEach(activity => { %>
+               <li><button class="activity-button" data-id="<%= activity._id %>"><%= activity.name %> </button> <%= activity.date.toDateString() %></li>
+        <% }); } %>       
+    </ul>
+</body>
+
+<script>
+    document.getElementById('addButton').addEventListener('click', async (e) => {
+        document.getElementById('addActivity').style.visibility = 'visible';
+        document.getElementById('addButton').style.visibility = 'hidden';
+    });
+
+    document.getElementById('addActivity').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value;
+        const date = document.getElementById('date').value;
+        const response = await fetch('/profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, date })
+        });
+        window.location.href = '/profile';
+    });
+
+
+    document.querySelectorAll('.activity-button').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            console.log('clicked');
+            const activityId = e.target.getAttribute('data-id');
+            window.location.href = `/profile/${activityId}`;
+        });
+    });
+    
+</script>
+
+</html>
