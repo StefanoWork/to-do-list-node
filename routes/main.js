@@ -164,7 +164,7 @@ router.get("/profile", authenticated, async (req, res, next) => {
  *         description: Invalid data
  *       404:
  *         description: User not found
- *      500:
+ *       500:
  *         description: Error adding activity
  */
 router.post("/profile", async (req, res) => {

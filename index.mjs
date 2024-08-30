@@ -3,34 +3,35 @@ import path from "path";
 import { fileURLToPath } from "url";
 import mainRouter from './routes/main.js';
 import passport from "passport";
-import LocalStrategy from "passport-local";
-import mongoose from "mongoose";
-import User from "./models/User.js";
+import configurePassport from './config/passport.js';
 import session from "express-session";
-import bcrypt from "bcrypt";
 import flash from "connect-flash";
 import swaggerSetup from "./swagger.js";
+import mongoose from "mongoose";
 
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(express.json());
-
 app.use(session({
     secret: 'Secste', 
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 1000 * 60 * 60
+    }
 }));
 
 swaggerSetup(app);
 
 app.use(passport.initialize());
 app.use(passport.session());
+configurePassport(passport);
+
 
 app.use(flash());
 app.use((req, res, next) => {
@@ -53,43 +54,7 @@ mongoose.connect('mongodb://localhost:27017/User',
 });
 
 
-
-// Passport setup
-passport.use(new LocalStrategy(
-   async (username, password, done) => {
-        try {
-            const user = await User.findOne({ username });
-            if (!user) {
-                return done(null, false, { message: 'Incorrect username.' });
-            }
-            const match = await bcrypt.compare(password, user.password);
-            if (!match) {
-                return done(null, false, { message: 'Incorrect password.' });
-            }
-            return done(null, user);
-        } catch (err) {
-            done(err);
-        }
-    }
-));
-
-passport.serializeUser((user, done) => {
-    done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await User.findById(id);
-        done(null, user);
-    } catch (err) {
-        done(err);
-    }
-});
-
 app.use("/", mainRouter);
-
-
-
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
