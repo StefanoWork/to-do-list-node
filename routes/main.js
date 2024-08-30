@@ -46,7 +46,7 @@ router.get("/signup", (req, res) => {
  *     responses:
  *       200:
  *         description: User registered
- *      400:
+ *       400:
  *         description: Invalid data
  *       500:
  *         description: Error registering user
@@ -97,11 +97,22 @@ const validateLogin = (req, res, next) => {
  *       200:
  *         description: Redirect profile page
  */
-router.post('/login', validateLogin, passport.authenticate('local', {
-  successRedirect: '/profile',
-  failureRedirect: '/login',
-  failureFlash: true
-}));
+router.post('/login', validateLogin, (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).send('Login failed');
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).send('Login successful');
+    });
+  })(req, res, next);
+});
 
 
 /**
