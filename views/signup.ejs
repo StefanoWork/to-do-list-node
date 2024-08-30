@@ -4,20 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Signup</title>
+  <style>
+     html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #main-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+    }
+    #loginForm {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+    .form-group {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .form-group label {
+      margin-right: 10px;
+    }
+    .form-group input {
+      width: 20%;
+    }
+  </style>
 </head>
 <body>
-  <h1>Effettua la registrazione</h1>
-  <form id="signupForm">
-    <label for="username">Username:</label>
-    <br></br>
-    <input type="text" id="username" name="username" required style="width: 20%;">
-    <br></br>
-    <label for="password">Password:</label>
-    <br></br>
-    <input type="password" id="password" name="password" required style="width: 20%;">
-    <br></br>
-    <button type="submit" style="border-radius: 12px; background-color: aqua; padding: 10px 20px;">Registrati</button>
-  </form>
+  <div id="main-container">
+    <h1>Effettua la registrazione</h1>
+    <form id="signupForm">
+       <div class="form-group">
+        <label for="username">Username:</label>
+        <br></br>
+        <input type="text" id="username" name="username" required style="width: 20%;">
+        <br></br>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <br></br>
+        <input type="password" id="password" name="password" required style="width: 20%;">
+        <br></br>
+      </div>
+      <button type="submit" style="border-radius: 12px; background-color: aqua; padding: 10px 20px;">Registrati</button>
+    </form>
+  </div>
 
   <script>
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
